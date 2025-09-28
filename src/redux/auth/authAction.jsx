@@ -5,7 +5,7 @@ export const login = (email, password) => async (dispatch) => {
   dispatch({ type: 'LOGIN_REQUEST' });
 
   try {
-    const res = await axios.post('http://localhost:5000/api/auth/login', {
+    const res = await axios.post(`${BASE_URL}/api/auth/login`, {
       email,
       password,
     });
@@ -26,7 +26,7 @@ export const getUsers = (page = 1, limit = 5, search = '') => async (dispatch) =
   dispatch({ type: 'GET_USERS_REQUEST' });
 
   try {
-    const res = await axios.get('http://localhost:5000/api/auth/getuserlist', {
+    const res = await axios.get(`${BASE_URL}/api/auth/getuserlist`, {
       params: { page, limit, search },
     });
     dispatch({ type: 'GET_USERS_SUCCESS', payload: res?.data?.users||[],total:res?.data?.total });
@@ -43,7 +43,7 @@ export const createuser = (email, password) => async (dispatch) => {
   dispatch({ type: 'LOGIN_REQUEST' });
 
   try {
-    const res = await axios.post('http://localhost:5000/api/auth/login', {
+    const res = await axios.post(`${BASE_URL}/api/auth/login`, {
       email,
       password,
     });
@@ -65,7 +65,7 @@ export const createUser = (userData) => async (dispatch) => {
   dispatch({ type: 'CREATE_USER_REQUEST' });
 
   try {
-    const res = await axios.post('http://localhost:5000/api/auth/createUser', userData);
+    const res = await axios.post(`${BASE_URL}/api/auth/createUser`, userData);
     dispatch({ type: 'CREATE_USER_SUCCESS', payload: res.data });
     dispatch(getUsers()); // refresh list
   } catch (error) {
@@ -80,7 +80,7 @@ export const updateUser = (id, userData) => async (dispatch) => {
   dispatch({ type: 'UPDATE_USER_REQUEST' });
 
   try {
-    const res = await axios.put(`http://localhost:5000/api/auth/updateuser/${id}`, userData);
+    const res = await axios.put(`${BASE_URL}/api/auth/updateuser/${id}`, userData);
     dispatch({ type: 'UPDATE_USER_SUCCESS', payload: res.data });
     dispatch(getUsers()); // refresh list
   } catch (error) {
@@ -95,7 +95,7 @@ export const deleteUser = (id, userData) => async (dispatch) => {
   dispatch({ type: 'DELETE_USER_REQUEST' });
 
   try {
-    const res = await axios.delete(`http://localhost:5000/api/auth/deleteuser/${id}`, userData);
+    const res = await axios.delete(`${BASE_URL}/api/auth/deleteuser/${id}`, userData);
     dispatch({ type: 'DELETE_USER_SUCCESS', payload: res.data });
     dispatch(getUsers()); // refresh list
   } catch (error) {
