@@ -1,5 +1,6 @@
 import { message } from 'antd';
 import axios from 'axios';
+import { BASE_URL } from '../../helpers/secret';
 
 export const login = (email, password) => async (dispatch) => {
   dispatch({ type: 'LOGIN_REQUEST' });
@@ -15,6 +16,7 @@ export const login = (email, password) => async (dispatch) => {
     message.success(res.data.message)
     dispatch({ type: 'LOGIN_SUCCESS', payload: token });
   } catch (error) {
+    console.log(error,"error")
     dispatch({
       type: 'LOGIN_FAILURE',
       payload: error.response?.data?.error || 'Login failed',
