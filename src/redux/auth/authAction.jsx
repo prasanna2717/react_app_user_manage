@@ -2,6 +2,10 @@ import { message } from 'antd';
 import axios from 'axios';
 import { BASE_URL } from '../../helpers/secret';
 
+const token = localStorage.getItem("token");
+const headers = {
+  Authorization: `Bearer ${token}`
+}
 export const login = (email, password) => async (dispatch) => {
   dispatch({ type: 'LOGIN_REQUEST' });
 
@@ -16,7 +20,7 @@ export const login = (email, password) => async (dispatch) => {
     message.success(res.data.message)
     dispatch({ type: 'LOGIN_SUCCESS', payload: token });
   } catch (error) {
-    console.log(error,"error")
+    console.log(error, "error")
     dispatch({
       type: 'LOGIN_FAILURE',
       payload: error.response?.data?.error || 'Login failed',
@@ -30,8 +34,9 @@ export const getUsers = (page = 1, limit = 5, search = '') => async (dispatch) =
   try {
     const res = await axios.get(`${BASE_URL}/api/auth/getuserlist`, {
       params: { page, limit, search },
+      headers
     });
-    dispatch({ type: 'GET_USERS_SUCCESS', payload: res?.data?.users||[],total:res?.data?.total });
+    dispatch({ type: 'GET_USERS_SUCCESS', payload: res?.data?.users || [], total: res?.data?.total });
   } catch (error) {
     dispatch({
       type: 'GET_USERS_FAILURE',
@@ -67,7 +72,7 @@ export const createUser = (userData) => async (dispatch) => {
   dispatch({ type: 'CREATE_USER_REQUEST' });
 
   try {
-    const res = await axios.post(`${BASE_URL}/api/auth/createUser`, userData);
+    const res = await axios.post(`${BASE_URL}/api/auth/createUser`, userData, { headers });
     dispatch({ type: 'CREATE_USER_SUCCESS', payload: res.data });
     dispatch(getUsers()); // refresh list
   } catch (error) {
@@ -77,12 +82,12 @@ export const createUser = (userData) => async (dispatch) => {
     });
   }
 };
-  
+
 export const updateUser = (id, userData) => async (dispatch) => {
   dispatch({ type: 'UPDATE_USER_REQUEST' });
 
   try {
-    const res = await axios.put(`${BASE_URL}/api/auth/updateuser/${id}`, userData);
+    const res = await axios.put(`${BASE_URL}/api/auth/updateuser/${id}`, userData, { headers });
     dispatch({ type: 'UPDATE_USER_SUCCESS', payload: res.data });
     dispatch(getUsers()); // refresh list
   } catch (error) {
@@ -90,14 +95,14 @@ export const updateUser = (id, userData) => async (dispatch) => {
       type: 'UPDATE_USER_FAILURE',
       payload: error.response?.data?.message || 'Failed to update user',
     });
-  } 
+  }
 };
 
 export const deleteUser = (id, userData) => async (dispatch) => {
   dispatch({ type: 'DELETE_USER_REQUEST' });
 
   try {
-    const res = await axios.delete(`${BASE_URL}/api/auth/deleteuser/${id}`, userData);
+    const res = await axios.delete(`${BASE_URL}/api/auth/deleteuser/${id}`, userData, { headers });
     dispatch({ type: 'DELETE_USER_SUCCESS', payload: res.data });
     dispatch(getUsers()); // refresh list
   } catch (error) {
@@ -109,5 +114,5 @@ export const deleteUser = (id, userData) => async (dispatch) => {
 
 
 
-  
+
 };
