@@ -38,7 +38,6 @@ const UsersCardView = ({ users, onEdit, onDelete }) => {
           onMouseEnter={() => setHoveredIndex(i)}
           onMouseLeave={() => setHoveredIndex(null)}
         >
-          {/* Avatar Section */}
           <div
             style={{
               position: 'relative',
@@ -59,7 +58,6 @@ const UsersCardView = ({ users, onEdit, onDelete }) => {
               }}
             />
 
-            {/* Overlay Icons */}
             {hoveredIndex === i && (
               <div
                 style={{
@@ -108,7 +106,6 @@ const UsersCardView = ({ users, onEdit, onDelete }) => {
             )}
           </div>
 
-          {/* Card Content */}
           <Card.Meta
             style={{ textAlign: 'center' }}
             title={<div style={{ fontWeight: 600 }}>{`${user.firstname} ${user.lastname}`}</div>}

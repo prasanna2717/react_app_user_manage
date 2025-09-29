@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Layout, Card, Tabs, Input, Button, Pagination, Modal } from 'antd';
+import { Layout, Card, Tabs, Input, Button, Pagination, Modal ,message} from 'antd';
 import { TableOutlined, AppstoreOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUsers, createUser, updateUser, deleteUser } from '../../redux/auth/authAction';
@@ -14,17 +14,7 @@ const { Content } = Layout;
 const { Search } = Input;
 const { confirm } = Modal;
 
-// Custom debounce hook here (or import from separate file)
-// function useDebounce(value, delay) {
-//     const [debouncedValue, setDebouncedValue] = useState(value);
 
-//     useEffect(() => {
-//         const handler = setTimeout(() => setDebouncedValue(value), delay);
-//         return () => clearTimeout(handler);
-//     }, [value, delay]);
-
-//     return debouncedValue;
-// }
 
 function UsersList() {
     const dispatch = useDispatch();
@@ -38,9 +28,8 @@ function UsersList() {
     const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
     const [selectedUserId, setSelectedUserId] = useState(null);
 
-    const debouncedSearchText = useDebounce(searchText, 500); // 500ms debounce
+    const debouncedSearchText = useDebounce(searchText, 500); 
 
-    // Fetch users whenever page or debounced search changes
     useEffect(() => {
         dispatch(getUsers(currentPage, 5, debouncedSearchText));
     }, [dispatch, currentPage, debouncedSearchText]);
@@ -52,6 +41,7 @@ function UsersList() {
 
     const handleCreate = () => {
         setEditingUser(null);
+        
         setIsModalVisible(true);
     };
 
@@ -60,27 +50,34 @@ function UsersList() {
         setIsModalVisible(true);
     };
 
-    const handleDelete = (userId) => {
-        confirm({
-            title: 'Are you sure you want to delete this user?',
-            okText: 'Yes',
-            okType: 'danger',
-            cancelText: 'No',
-            onOk() {
-                dispatch(deleteUser(userId));
-            },
-            onCancel() {
-                console.log('Delete cancelled');
-            },
-        });
-    };
+   const [messageApi, contextHolder] = message.useMessage();
 
-    const handleModalSubmit = (values, form) => {
-        if (editingUser?._id) dispatch(updateUser(editingUser._id, values));
-        else dispatch(createUser(values));
-        form.resetFields();
-        setIsModalVisible(false);
-    };
+
+   const handleModalSubmit = async (values, form) => {
+  try {
+    let result;
+
+    if (editingUser?._id) {
+      result = await dispatch(updateUser(editingUser._id, values));
+    } else {
+              form.resetFields();
+
+      result = await dispatch(createUser(values));
+      
+    }
+
+    if (result.success) {
+      messageApi.success(result.message);
+      form.resetFields();
+      setIsModalVisible(false);
+    } else {
+      messageApi.error(result.message);
+    }
+  } catch (error) {
+    messageApi.error('Unexpected error. Please try again.');
+  }
+};
+
 
     const handleSearchChange = (e) => {
         setSearchText(e.target.value);
@@ -96,38 +93,50 @@ function UsersList() {
         setIsDeleteModalVisible(true);
     };
 
-    const handleDeleteConfirm = () => {
-        dispatch(deleteUser(selectedUserId));
-        setIsDeleteModalVisible(false);
-    };
+const handleDeleteConfirm = async () => {
+  try {
+    const result = await dispatch(deleteUser(selectedUserId));
+
+    if (result.success) {
+      messageApi.success(result.message || 'Deleted successfully');
+    } else {
+      messageApi.error(result.message || 'Failed to delete user');
+    }
+
+    setIsDeleteModalVisible(false);
+  } catch (error) {
+    messageApi.error('Unexpected error. Please try again.');
+  }
+};
+
 
     return (
         <Layout style={{ minHeight: '100vh' }}>
             <UsersHeader onLogout={handleLogout} />
 
             <Content style={{ background: '#f5f7fa', padding: '24px' }}>
+                {contextHolder}
+
                 <Card style={{ borderRadius: 8 }}>
 
                     <div
                         style={{
                             display: 'flex',
-                            flexWrap: 'wrap',             // allow wrapping on small screens
+                            flexWrap: 'wrap',             
                             justifyContent: 'space-between',
                             alignItems: 'center',
                             gap: '12px',
                             marginBottom: 16,
                         }}
                     >
-                        {/* Title */}
                         <h4 style={{ margin: 0 }}>Users</h4>
 
-                        {/* Search + Button */}
                         <div
                             style={{
                                 display: 'flex',
                                 gap: '12px',
                                 flexGrow: 1,
-                                flexWrap: 'nowrap',         // prevent wrapping on large screens
+                                flexWrap: 'nowrap',         
                                 alignItems: 'center',
                                 justifyContent: 'flex-end',
                                 minWidth: 200,
@@ -146,7 +155,6 @@ function UsersList() {
                     </div>
 
 
-                    {/* Tabs */}
                     <Tabs
                         activeKey={activeTab}
                         onChange={setActiveTab}
@@ -170,8 +178,7 @@ function UsersList() {
                         />
                     )}
 
-                    {/* ✅ Responsive Pagination */}
-                    <div style={{ marginTop: 16, textAlign: 'center' }}>
+                    <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end' }}>
                         <Pagination
                             current={currentPage}
                             total={total}

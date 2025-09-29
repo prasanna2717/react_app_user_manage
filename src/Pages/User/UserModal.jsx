@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Modal, Form, Input } from 'antd';
 
 const UserModal = ({ visible, onCancel, onSubmit, initialValues = {} }) => {
   const [form] = Form.useForm();
-  console.log(initialValues,"initialValues")
-  form.setFieldsValue(initialValues);
+  useEffect(() => {
+    if (visible) {
+      form.resetFields(); 
+      form.setFieldsValue(initialValues); 
+    }
+  }, [visible, initialValues, form]);
 
   return (
     <Modal

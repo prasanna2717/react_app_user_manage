@@ -13,7 +13,6 @@ import { Modal, Button } from 'antd';
       type="primary"
       danger
       onClick={() => {
-        // Trigger API / Redux delete action
         dispatch(deleteUser(selectedUserId));
         setIsDeleteModalVisible(false);
       }}
