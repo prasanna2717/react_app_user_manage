@@ -34,10 +34,14 @@ function UsersList() {
         dispatch(getUsers(currentPage, 5, debouncedSearchText));
     }, [dispatch, currentPage, debouncedSearchText]);
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        window.location.href = '/login';
-    };
+const handleLogout = () => {
+  messageApi.success('You have been logged out successfully');
+
+  setTimeout(() => {
+    localStorage.removeItem('token');
+    window.location.href = '/login';
+  }, 1500);
+};
 
     const handleCreate = () => {
         setEditingUser(null);
