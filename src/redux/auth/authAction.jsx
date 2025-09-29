@@ -18,8 +18,8 @@ export const login = (email, password) => async (dispatch) => {
     const token = res.data.token;
     localStorage.setItem('token', token);
     
-    message.success(res.data.message)
     dispatch({ type: 'LOGIN_SUCCESS', payload: token });
+
         return { success: true, message: res.data.message || 'Login successful' };
   } catch (error) {
         const errorMsg = error.response?.data?.message || 'Login failed';
@@ -35,6 +35,9 @@ export const getUsers = (page = 1, limit = 5, search = '') => async (dispatch) =
   dispatch({ type: 'GET_USERS_REQUEST' });
 
   try {
+
+     const token = localStorage.getItem("token"); // ✅ read fresh token
+    const headers = { Authorization: `Bearer ${token}` };
     const res = await axios.get(`${BASE_URL}/api/auth/getuserlist`, {
       params: { page, limit, search },
       headers
@@ -56,7 +59,7 @@ export const createUser = (userData) => async (dispatch) => {
   try {
     const res = await axios.post(`${BASE_URL}/api/auth/createUser`, userData, { headers });
     dispatch({ type: 'CREATE_USER_SUCCESS', payload: res.data });
-    dispatch(getUsers()); // refresh list
+    dispatch(getUsers()); 
         return { success: true, message: res.data.message || 'User created successfully' };
   } catch (error) {
         const errorMsg = error.response?.data?.message || 'Failed to create user';
@@ -92,6 +95,9 @@ export const deleteUser = (id, userData) => async (dispatch) => {
   
 
   try {
+
+      const token = localStorage.getItem("token"); // ✅ read fresh token
+    const headers = { Authorization: `Bearer ${token}` };
     const res = await axios.delete(`${BASE_URL}/api/auth/deleteuser/${id}`, { headers });
     dispatch({ type: 'DELETE_USER_SUCCESS', payload: res.data });
     dispatch(getUsers()); // refresh list
