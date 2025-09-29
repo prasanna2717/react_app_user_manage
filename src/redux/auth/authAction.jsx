@@ -57,6 +57,8 @@ export const createUser = (userData) => async (dispatch) => {
   dispatch({ type: 'CREATE_USER_REQUEST' });
 
   try {
+       const token = localStorage.getItem("token");
+    const headers = { Authorization: `Bearer ${token}` };
     const res = await axios.post(`${BASE_URL}/api/auth/createUser`, userData, { headers });
     dispatch({ type: 'CREATE_USER_SUCCESS', payload: res.data });
     dispatch(getUsers()); 
@@ -75,6 +77,8 @@ export const updateUser = (id, userData) => async (dispatch) => {
   dispatch({ type: 'UPDATE_USER_REQUEST' });
 
   try {
+         const token = localStorage.getItem("token"); 
+    const headers = { Authorization: `Bearer ${token}` };
     const res = await axios.put(`${BASE_URL}/api/auth/updateuser/${id}`, userData, { headers });
     dispatch({ type: 'UPDATE_USER_SUCCESS', payload: res.data });
     dispatch(getUsers()); // refresh list

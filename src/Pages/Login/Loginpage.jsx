@@ -57,7 +57,6 @@ const LoginPage = () => {
 const result = await dispatch(login(email, password));
 console.log(result)
   if (result.success) {
-    console.log("first")
     messageApi.success(result.message);
      setTimeout(() => {
       navigate('/users');
